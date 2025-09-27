@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "display.h" // UI header
 
 using std::cin;
 using std::cout;
@@ -8,8 +9,10 @@ using std::endl;
 using std::string;
 using std::vector;
 
+// forward declaration as Board class was used inside Player class
 class Board;
 
+// super class for Players
 class Player
 {
 public:
@@ -20,7 +23,7 @@ public:
     Player(string name) : name(name) {}
     Player(string name, char symbol) : name(name), symbol(symbol) {}
 
-private:
+protected:
     // check horizontal line
     bool checkHorizontal(vector<vector<char>> grid, int row)
     {
@@ -73,9 +76,10 @@ private:
 
 public:
     // function to place symbol and check if game is over
-    bool placeMove(Board &board);
+    virtual bool placeMove(Board &board) = 0;
 };
 
+// class for Board
 class Board
 {
 public:
@@ -88,12 +92,14 @@ public:
     {
         this->n = dimension;
 
+        // resizing the grid
         grid.resize(n);
         for (int i = 0; i < n; i++)
         {
             grid[i].resize(n);
         }
 
+        // adding placeholders in the grid
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < n; j++)
@@ -141,43 +147,45 @@ public:
     }
 };
 
-// function to place symbol an check if the game is over
-bool Player::placeMove(Board &board)
+// Human class
+class Human : public Player
 {
-    int gridBody = board.grid.size();
-    int position;
-    cout << name << "'s turn. Place your move: ";
-    cin >> position;
+public:
+    Human(string name, char symbol) : Player(name, symbol) {}
 
-    // calculating row from position
-    int row = position <= gridBody ? 0 : (position - 1) / gridBody;
-    // calculating column from position
-    int col = position <= gridBody ? position - 1 : (position - 1) % gridBody;
-
-    if (isCellOccupied(board.grid, row, col))
+    // function to place symbol an check if the game is over
+    bool placeMove(Board &board) override
     {
-        cout << " Cell occupied.Choose a different position." << endl;
-        return placeMove(board);
+        int gridBody = board.grid.size();
+        int position;
+        cout << name << "'s turn. Place your move: ";
+        cin >> position;
+
+        // calculating row from position
+        int row = position <= gridBody ? 0 : (position - 1) / gridBody;
+        // calculating column from position
+        int col = position <= gridBody ? position - 1 : (position - 1) % gridBody;
+
+        if (isCellOccupied(board.grid, row, col))
+        {
+            cout << " Cell occupied.Choose a different position." << endl;
+            return placeMove(board);
+        }
+
+        board.grid[row][col] = this->symbol;
+
+        // checking for game over
+        return checkHorizontal(board.grid, row) || checkVertical(board.grid, col) || checkDiagonal(board.grid);
     }
+};
 
-    board.grid[row][col] = this->symbol;
-    return checkHorizontal(board.grid, row) || checkVertical(board.grid, col) || checkDiagonal(board.grid);
-}
-
-void playVsHuman(int n)
+// function to play against human opponent
+void play(int n, Player* player1, Player* player2)
 {
     bool gameOver = false;
     Board board(n);
 
-    string player1Name, player2Name;
-    cout << "Enter player 1 name: ";
-    cin >> player1Name;
-    cout << "Enter player 2 name: ";
-    cin >> player2Name;
-
-    Player *player1 = new Player(player1Name, 'X');
-    Player *player2 = new Player(player2Name, 'O');
-
+    // Match loop
     board.displayBoard();
     bool turn = false;
     while (!gameOver)
@@ -197,66 +205,98 @@ void playVsHuman(int n)
 
     Player *winner = turn ? player1 : player2;
     cout << "Game Over. Winner: " << (winner->name) << endl;
-    cout << "----------------------------------" << endl << endl;
-}
+    cout << "-------------------------------------" << endl
+         << endl;
 
-void displayHeader()
-{
-    cout << "           Tic Tac Toe      " << endl;
-    cout << "        A turn based game   " << endl;
-    cout << "----------------------------------" << endl;
-}
-
-void displayMenu()
-{
+    // setting up restart window
     displayHeader();
-    cout << " [Menu] > 1. Play" << endl;
-    cout << "          2. History" << endl;
-    cout << "          3. Help" << endl;
-    cout << "          4. Quit" << endl;
+    cout << "   [Human" << endl;
+    cout << " vs Human] > 1. Restart" << endl;
+    cout << "             2. Back" << endl;
+    int option;
+    cin >> option;
+    if (option == 1)
+    {
+        // todo keep the old names using another recursive helper function
+        play(n, player1, player2);
+    }
+    else if (option == 2)
+    {
+        return;
+    }
+    else
+    {
+        displayHeader();
+        cout << "Invalid Option. Please choose between the given options" << endl;
+    }
 }
 
-void play()
+// function to play
+void runGame()
 {
     int n;
     displayHeader();
     cout << "Enter grid size: ";
     cin >> n;
 
+    // todo n<3 for production
     if (n < 2)
     {
         displayHeader();
         cout << "At least 3x3 dimension is required for fair gameplay." << endl;
-        play();
+        runGame();
         return;
     }
 
-    playVsHuman(n);
+    // setup to choose between 2 modes
+    displayHeader();
+    cout << "[Play] > 1. Human vs Human" << endl;
+    cout << "         2. Human vs AI" << endl;
 
-    int option = 1;
-    while (option != 2)
+    string player1Name, player2Name;
+    cout << "Enter player 1 name: ";
+    cin >> player1Name;
+    cout << "Enter player 2 name: ";
+    cin >> player2Name;
+
+    Player *player1 = new Human(player1Name, 'X');
+    Player *player2 = new Human(player2Name, 'O');
+
+    int vsHuman;
+    cin >> vsHuman;
+    if (vsHuman == 1)
+        play(n);
+    else
     {
-        displayHeader();
-        cout << "[Play] > 1. Restart" << endl;
-        cout << "         2. Back to menu" << endl;
-        cin >> option;
-        if (option == 1)
-        {
-            play();
-            return;
-        }
-        else if (option == 2)
-        {
-            return;
-        }
-        else
-        {
-            displayHeader();
-            cout << "Invalid Option. Please choose between the given options" << endl;
-        }
+        play(n);
     }
+
+    // restart setup after match
+    // int option = 1;
+    // while (option != 2)
+    // {
+    //     displayHeader();
+    //     cout << "[Play] > 1. Start a new game" << endl;
+    //     cout << "         2. Back to menu" << endl;
+    //     cin >> option;
+    //     if (option == 1)
+    //     {
+    //         runGame();
+    //         return;
+    //     }
+    //     else if (option == 2)
+    //     {
+    //         return;
+    //     }
+    //     else
+    //     {
+    //         displayHeader();
+    //         cout << "Invalid Option. Please choose between the given options" << endl;
+    //     }
+    // }
 }
 
+// main function
 int main()
 {
     // Game loop
@@ -268,7 +308,7 @@ int main()
         switch (option)
         {
         case 1:
-            play();
+            runGame();
             break;
         case 2:
             cout << " Coming soon!!!" << endl;
