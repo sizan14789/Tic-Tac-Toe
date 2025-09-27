@@ -179,8 +179,40 @@ public:
     }
 };
 
+// AI class
+class AI : public Player
+{
+public:
+    AI(string name, char symbol) : Player(name, symbol) {}
+
+    // function to place symbol an check if the game is over
+    bool placeMove(Board &board) override
+    {
+        int gridBody = board.grid.size();
+        int position;
+        cout << name << "'s turn. Place your move: ";
+        cin >> position;
+
+        // calculating row from position
+        int row = position <= gridBody ? 0 : (position - 1) / gridBody;
+        // calculating column from position
+        int col = position <= gridBody ? position - 1 : (position - 1) % gridBody;
+
+        if (isCellOccupied(board.grid, row, col))
+        {
+            cout << " Cell occupied.Choose a different position." << endl;
+            return placeMove(board);
+        }
+
+        board.grid[row][col] = this->symbol;
+
+        // checking for game over
+        return checkHorizontal(board.grid, row) || checkVertical(board.grid, col) || checkDiagonal(board.grid);
+    }
+};
+
 // function to play against human opponent
-void play(int n, Player* player1, Player* player2)
+void play(int n, Player *player1, Player *player2)
 {
     bool gameOver = false;
     Board board(n);
@@ -210,14 +242,13 @@ void play(int n, Player* player1, Player* player2)
 
     // setting up restart window
     displayHeader();
-    cout << "   [Human" << endl;
-    cout << " vs Human] > 1. Restart" << endl;
+    cout << "   [Match] > 1. Restart" << endl;
     cout << "             2. Back" << endl;
+
     int option;
     cin >> option;
     if (option == 1)
     {
-        // todo keep the old names using another recursive helper function
         play(n, player1, player2);
     }
     else if (option == 2)
@@ -253,47 +284,30 @@ void runGame()
     cout << "[Play] > 1. Human vs Human" << endl;
     cout << "         2. Human vs AI" << endl;
 
+    // Player setup based on mode chosen
+    int vsHuman;
+    cin >> vsHuman;
+
     string player1Name, player2Name;
     cout << "Enter player 1 name: ";
     cin >> player1Name;
-    cout << "Enter player 2 name: ";
-    cin >> player2Name;
 
-    Player *player1 = new Human(player1Name, 'X');
-    Player *player2 = new Human(player2Name, 'O');
-
-    int vsHuman;
-    cin >> vsHuman;
     if (vsHuman == 1)
-        play(n);
-    else
     {
-        play(n);
+        cout << "Enter player 2 name: ";
+        cin >> player2Name;
     }
 
-    // restart setup after match
-    // int option = 1;
-    // while (option != 2)
-    // {
-    //     displayHeader();
-    //     cout << "[Play] > 1. Start a new game" << endl;
-    //     cout << "         2. Back to menu" << endl;
-    //     cin >> option;
-    //     if (option == 1)
-    //     {
-    //         runGame();
-    //         return;
-    //     }
-    //     else if (option == 2)
-    //     {
-    //         return;
-    //     }
-    //     else
-    //     {
-    //         displayHeader();
-    //         cout << "Invalid Option. Please choose between the given options" << endl;
-    //     }
-    // }
+    Player *player1 = new Human(player1Name, 'X');
+    Player *player2;
+
+    if (vsHuman == 1)
+        player2 = new Human(player2Name, 'O');
+    else
+        player2 = new AI("AI", 'O');
+
+    // match starting loop
+    play(n, player1, player2);
 }
 
 // main function
