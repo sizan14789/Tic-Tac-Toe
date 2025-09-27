@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "display.h" // UI header
+#include "main.h" // UI header
 
 using std::cin;
 using std::cout;
@@ -75,6 +75,17 @@ protected:
     }
 
 public:
+    // function to check if draw
+    static bool isDraw(vector<vector<char>> grid)
+    {
+        int n = grid.size();
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                if (grid[i][j] != 'X' && grid[i][j] != 'O')
+                    return false;
+        return true;
+    }
+
     // function to place symbol and check if game is over
     virtual bool placeMove(Board &board) = 0;
 };
@@ -185,6 +196,14 @@ class AI : public Player
 public:
     AI(string name, char symbol) : Player(name, symbol) {}
 
+    // function to get available moves from AI
+    vector<int> getAvailableMoves(vector<vector<int>> grid)
+    {
+        vector<int> moves;
+
+        return moves;
+    }
+
     // function to place symbol an check if the game is over
     bool placeMove(Board &board) override
     {
@@ -211,7 +230,7 @@ public:
     }
 };
 
-// function to play against human opponent
+// function to start a match
 void play(int n, Player *player1, Player *player2)
 {
     bool gameOver = false;
@@ -219,26 +238,36 @@ void play(int n, Player *player1, Player *player2)
 
     // Match loop
     board.displayBoard();
-    bool turn = false;
+    Player *turn = player1;
     while (!gameOver)
     {
-        turn = !turn;
-        if (turn)
+        if (turn == player1)
         {
             gameOver = player1->placeMove(board);
             board.displayBoard();
+            turn = player2;
         }
         else
         {
             gameOver = player2->placeMove(board);
             board.displayBoard();
+            turn = player1;
+        }
+        bool draw = Player::isDraw(board.grid);
+        if (draw)
+        {
+            gameOver = true;
+            turn = nullptr;
         }
     }
-
-    Player *winner = turn ? player1 : player2;
-    cout << "Game Over. Winner: " << (winner->name) << endl;
-    cout << "-------------------------------------" << endl
-         << endl;
+    if (turn == nullptr)
+    {
+        cout << "Game Over!!! Draw" << endl;
+    }
+    else
+    {
+        cout << "Game Over!!! Winner: " << (turn->name) << endl;
+    }
 
     // setting up restart window
     displayHeader();
@@ -258,11 +287,11 @@ void play(int n, Player *player1, Player *player2)
     else
     {
         displayHeader();
-        cout << "Invalid Option. Please choose between the given options" << endl;
+        displayWarning();
     }
 }
 
-// function to play
+// function to start the game
 void runGame()
 {
     int n;
@@ -279,32 +308,46 @@ void runGame()
         return;
     }
 
-    // setup to choose between 2 modes
-    displayHeader();
-    cout << "[Play] > 1. Human vs Human" << endl;
-    cout << "         2. Human vs AI" << endl;
-
     // Player setup based on mode chosen
-    int vsHuman;
-    cin >> vsHuman;
+    Player *player1 = new Human("", 'X');
+    Player *player2;
 
+    // setup to choose between 2 modes
+    int option;
+    while (true)
+    {
+        displayHeader();
+        cout << "[Play] > 1. Human vs Human" << endl;
+        cout << "         2. Human vs AI" << endl;
+        cin >> option;
+        if (option == 1)
+        {
+            player2 = new Human("", 'O');
+            break;
+        }
+        else if (option == 2)
+        {
+            player2 = new AI("AI", 'O');
+            break;
+        }
+        else
+        {
+            displayWarning();
+        }
+    }
+
+    // setting up player names
     string player1Name, player2Name;
     cout << "Enter player 1 name: ";
     cin >> player1Name;
+    player1->name = player1Name;
 
-    if (vsHuman == 1)
+    if (option == 1)
     {
         cout << "Enter player 2 name: ";
         cin >> player2Name;
+        player2->name = player2Name;
     }
-
-    Player *player1 = new Human(player1Name, 'X');
-    Player *player2;
-
-    if (vsHuman == 1)
-        player2 = new Human(player2Name, 'O');
-    else
-        player2 = new AI("AI", 'O');
 
     // match starting loop
     play(n, player1, player2);
