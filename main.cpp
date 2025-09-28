@@ -115,7 +115,8 @@ public:
         {
             for (int j = 0; j < n; j++)
             {
-                grid[i][j] = (char)(i * n + j + 48 + 1);
+                // grid[i][j] = (char)(i * n + j + 48 + 1);
+                grid[i][j] = ' ';
             }
         }
     }
@@ -128,6 +129,7 @@ public:
             // board top border
             if (i == 0)
             {
+                cout << "        ";
                 for (int j = 0; j < n; j++)
                 {
                     if (j == 0)
@@ -137,6 +139,7 @@ public:
                 cout << endl;
             }
 
+            cout << "        ";
             // board elements
             for (int j = 0; j < n; j++)
             {
@@ -146,6 +149,7 @@ public:
             }
             cout << endl;
 
+            cout << "        ";
             // bottom border
             for (int j = 0; j < n; j++)
             {
@@ -169,9 +173,18 @@ public:
     {
         int gridBody = board.grid.size();
         int position;
-        cout << name << "'s turn. Place your move: ";
-        cin >> position;
-
+        
+        while (true){
+            cout << name << "'s turn. Place your move: ";
+            cin >> position;
+            if (position > gridBody*gridBody)
+            {
+                cout << position << " is out of the grid. Position must be <= " << gridBody*gridBody << endl;
+            } else {
+                break;
+            }
+        }
+        
         // calculating row from position
         int row = position <= gridBody ? 0 : (position - 1) / gridBody;
         // calculating column from position
@@ -179,7 +192,7 @@ public:
 
         if (isCellOccupied(board.grid, row, col))
         {
-            cout << " Cell occupied.Choose a different position." << endl;
+            cout << "Position occupied.Choose a different position please." << endl;
             return placeMove(board);
         }
 
@@ -209,9 +222,18 @@ public:
     {
         int gridBody = board.grid.size();
         int position;
-        cout << name << "'s turn. Place your move: ";
-        cin >> position;
 
+        while (true){
+            cout << name << "'s turn. Place your move: ";
+            cin >> position;
+            if (position > gridBody*gridBody)
+            {
+                cout << position << " is out of the grid. Position must be <= " << gridBody*gridBody << endl;
+            } else {
+                break;
+            }
+        }
+        
         // calculating row from position
         int row = position <= gridBody ? 0 : (position - 1) / gridBody;
         // calculating column from position
@@ -274,13 +296,13 @@ void play(int n, Player *player1, Player *player2)
     cout << "   [Match] > 1. Restart" << endl;
     cout << "             2. Back" << endl;
 
-    int option;
+    char option;
     cin >> option;
-    if (option == 1)
+    if (option == '1')
     {
         play(n, player1, player2);
     }
-    else if (option == 2)
+    else if (option == '2')
     {
         return;
     }
@@ -313,19 +335,19 @@ void runGame()
     Player *player2;
 
     // setup to choose between 2 modes
-    int option;
+    char option;
     while (true)
     {
         displayHeader();
         cout << "[Play] > 1. Human vs Human" << endl;
         cout << "         2. Human vs AI" << endl;
         cin >> option;
-        if (option == 1)
+        if (option == '1')
         {
             player2 = new Human("", 'O');
             break;
         }
-        else if (option == 2)
+        else if (option == '2')
         {
             player2 = new AI("AI", 'O');
             break;
@@ -342,7 +364,7 @@ void runGame()
     cin >> player1Name;
     player1->name = player1Name;
 
-    if (option == 1)
+    if (option == '1')
     {
         cout << "Enter player 2 name: ";
         cin >> player2Name;
@@ -360,20 +382,20 @@ int main()
     while (true)
     {
         displayMenu();
-        int option;
+        char option;
         cin >> option;
         switch (option)
         {
-        case 1:
+        case '1':
             runGame();
             break;
-        case 2:
+        case '2':
             cout << " Coming soon!!!" << endl;
             break;
-        case 3:
+        case '3':
             cout << " Coming soon!!!" << endl;
             break;
-        case 4:
+        case '4':
             cout << " Thanks for playing";
             return 0;
             break;
