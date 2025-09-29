@@ -173,18 +173,21 @@ public:
     {
         int gridBody = board.grid.size();
         int position;
-        
-        while (true){
+
+        while (true)
+        {
             cout << name << "'s turn. Place your move: ";
             cin >> position;
-            if (position > gridBody*gridBody)
+            if (position > gridBody * gridBody)
             {
-                cout << position << " is out of the grid. Position must be <= " << gridBody*gridBody << endl;
-            } else {
+                cout << position << " is out of the grid. Position must be <= " << gridBody * gridBody << endl;
+            }
+            else
+            {
                 break;
             }
         }
-        
+
         // calculating row from position
         int row = position <= gridBody ? 0 : (position - 1) / gridBody;
         // calculating column from position
@@ -210,40 +213,56 @@ public:
     AI(string name, char symbol) : Player(name, symbol) {}
 
     // function to get available moves from AI
-    vector<int> getAvailableMoves(vector<vector<int>> grid)
+    vector<vector<int>> getAvailableMoves(vector<vector<char>> grid)
     {
-        vector<int> moves;
+        int gridDimension = grid.size();
+        vector<vector<int>> availableMoves;
 
-        return moves;
+        for (int i = 0; i < gridDimension; i++)
+        {
+            for (int j = 0; j < gridDimension; j++)
+            {
+                if (grid[i][j] != 'X' && grid[i][j] != 'O')
+                {
+                    vector<int> v(2);
+                    v[0] = i;
+                    v[1] = j;
+                    availableMoves.push_back(v);
+                }
+            }
+        }
+
+        return availableMoves;
+    }
+
+    //? remove temporary function to display a vector
+    void displayVector(vector<vector<int>> v)
+    {
+        int n = v.size();
+        for (int i = 0; i < n; i++){
+            int l = v[i].size();
+            for (int j = 0; j < l; j++)
+            {
+                cout << v[i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
     }
 
     // function to place symbol an check if the game is over
     bool placeMove(Board &board) override
-    {
-        int gridBody = board.grid.size();
-        int position;
+    {   
+        cout << "AI's Turn:"<< endl;
 
-        while (true){
-            cout << name << "'s turn. Place your move: ";
-            cin >> position;
-            if (position > gridBody*gridBody)
-            {
-                cout << position << " is out of the grid. Position must be <= " << gridBody*gridBody << endl;
-            } else {
-                break;
-            }
-        }
-        
-        // calculating row from position
-        int row = position <= gridBody ? 0 : (position - 1) / gridBody;
-        // calculating column from position
-        int col = position <= gridBody ? position - 1 : (position - 1) % gridBody;
+        vector<vector<int>> v = getAvailableMoves(board.grid);
 
-        if (isCellOccupied(board.grid, row, col))
-        {
-            cout << " Cell occupied.Choose a different position." << endl;
-            return placeMove(board);
-        }
+        int availableMovesCount = v.size();
+        int randomMoveIndex = rand() % availableMovesCount;
+        vector<int> randomMoveSet = v[randomMoveIndex];
+
+        int row = randomMoveSet[0];
+        int col = randomMoveSet[1];
 
         board.grid[row][col] = this->symbol;
 
@@ -261,34 +280,37 @@ void play(int n, Player *player1, Player *player2)
     // Match loop
     board.displayBoard();
     Player *turn = player1;
+    Player *winner = nullptr;
     while (!gameOver)
     {
         if (turn == player1)
         {
             gameOver = player1->placeMove(board);
             board.displayBoard();
+            winner = player1;
             turn = player2;
         }
         else
         {
             gameOver = player2->placeMove(board);
             board.displayBoard();
+            winner = player2;
             turn = player1;
         }
         bool draw = Player::isDraw(board.grid);
         if (draw)
         {
             gameOver = true;
-            turn = nullptr;
+            winner = nullptr;
         }
     }
-    if (turn == nullptr)
+    if (winner == nullptr)
     {
         cout << "Game Over!!! Draw" << endl;
     }
     else
     {
-        cout << "Game Over!!! Winner: " << (turn->name) << endl;
+        cout << "Game Over!!! Winner: " << (winner->name) << endl;
     }
 
     // setting up restart window
@@ -390,17 +412,21 @@ int main()
             runGame();
             break;
         case '2':
-            cout << " Coming soon!!!" << endl;
+            cout << "Coming soon!!!" << endl;
             break;
         case '3':
-            cout << " Coming soon!!!" << endl;
+            cout << "Coming soon!!!" << endl;
             break;
         case '4':
-            cout << " Thanks for playing";
+            cout << "Coming Soon!!!";
+            return 0;
+            break;
+        case '5':
+            cout << "Thanks for playing";
             return 0;
             break;
         default:
-            cout << " Invalid option. Choose between a given option please" << endl;
+            displayWarning();
             break;
         }
     }

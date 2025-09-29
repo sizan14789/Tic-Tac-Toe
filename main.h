@@ -17,8 +17,9 @@ void displayMenu()
     displayHeader();
     std::cout << "   [Menu] > 1. Play" << std::endl;
     std::cout << "            2. History" << std::endl;
-    std::cout << "            3. Help" << std::endl;
-    std::cout << "            4. Quit" << std::endl;
+    std::cout << "            3. Rules" << std::endl;
+    std::cout << "            4. Help" << std::endl;
+    std::cout << "            5. Quit" << std::endl;
 }
 
 // function to display warning
