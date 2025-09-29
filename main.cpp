@@ -3,13 +3,11 @@
 #include <string>
 #include "main.h" // UI header
 
-// using std::cin;
-// using std::cout;
-// using std::endl;
-// using std::string;
-// using std::vector;
-
-using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
 
 // forward declaration as Board class was used inside Player class
 class Board;
