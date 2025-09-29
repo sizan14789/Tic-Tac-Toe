@@ -3,11 +3,13 @@
 #include <string>
 #include "main.h" // UI header
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
+// using std::cin;
+// using std::cout;
+// using std::endl;
+// using std::string;
+// using std::vector;
+
+using namespace std;
 
 // forward declaration as Board class was used inside Player class
 class Board;
@@ -172,6 +174,7 @@ public:
     bool placeMove(Board &board) override
     {
         int gridBody = board.grid.size();
+
         int position;
 
         while (true)
@@ -239,7 +242,8 @@ public:
     void displayVector(vector<vector<int>> v)
     {
         int n = v.size();
-        for (int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++)
+        {
             int l = v[i].size();
             for (int j = 0; j < l; j++)
             {
@@ -252,8 +256,8 @@ public:
 
     // function to place symbol an check if the game is over
     bool placeMove(Board &board) override
-    {   
-        cout << "AI's Turn:"<< endl;
+    {
+        cout << "AI's Turn:" << endl;
 
         vector<vector<int>> v = getAvailableMoves(board.grid);
 
@@ -304,6 +308,7 @@ void play(int n, Player *player1, Player *player2)
             winner = nullptr;
         }
     }
+
     if (winner == nullptr)
     {
         cout << "Game Over!!! Draw" << endl;
@@ -314,24 +319,27 @@ void play(int n, Player *player1, Player *player2)
     }
 
     // setting up restart window
-    displayHeader();
-    cout << "   [Match] > 1. Restart" << endl;
-    cout << "             2. Back" << endl;
-
     char option;
-    cin >> option;
-    if (option == '1')
-    {
-        play(n, player1, player2);
-    }
-    else if (option == '2')
-    {
-        return;
-    }
-    else
+    while (true)
     {
         displayHeader();
-        displayWarning();
+        cout << "   [Match] > 1. Restart" << endl;
+        cout << "             2. Back" << endl;
+        cin >> option;
+        if (option == '1')
+        {
+            play(n, player1, player2);
+            return;
+        }
+        else if (option == '2')
+        {
+            return;
+        }
+        else
+        {
+            displayHeader();
+            displayWarning();
+        }
     }
 }
 
@@ -397,7 +405,6 @@ void runGame()
     play(n, player1, player2);
 }
 
-// main function
 int main()
 {
     // Game loop
@@ -419,7 +426,6 @@ int main()
             break;
         case '4':
             cout << "Coming Soon!!!";
-            return 0;
             break;
         case '5':
             cout << "Thanks for playing";

@@ -32,6 +32,11 @@ void help(){
   
 }
 
+// function for rules
+void rules(){
+  
+}
+
 // function for history
 void history(){
 
