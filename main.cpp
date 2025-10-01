@@ -1,7 +1,19 @@
 #include <iostream>
+#include <windows.h>
 #include <vector>
 #include <string>
+#include <conio.h>
 #include "main.h" // UI header
+
+#define ESC "\033["
+
+// keyboard keys
+#define ESCAPE 27
+#define ENTER 13
+#define UP 224 + 72
+#define LEFT 224 + 75
+#define RIGHT 224 + 77
+#define DOWN 224 + 80
 
 using std::cin;
 using std::cout;
@@ -124,6 +136,8 @@ public:
     // function to display the board
     void displayBoard()
     {
+        clearScreen();
+        cout << "Game Board:" << endl;
         for (int i = 0; i < n; i++)
         {
             // board top border
@@ -160,6 +174,51 @@ public:
             cout << endl;
         }
     }
+
+    void displayBoard(int row, int col)
+    {
+        clearScreen();
+        cout << "Game Board:" << endl;
+        for (int i = 0; i < n; i++)
+        {
+            // board top border
+            if (i == 0)
+            {
+                cout << "        ";
+                for (int j = 0; j < n; j++)
+                {
+                    if (j == 0)
+                        cout << " ";
+                    cout << "----";
+                }
+                cout << endl;
+            }
+
+            cout << "        ";
+            // board elements
+            for (int j = 0; j < n; j++)
+            {
+                if (j == 0)
+                    cout << "|";
+
+                if (i == row && j == col)
+                    cout << ">" << grid[i][j] << "<|";
+                else
+                    cout << " " << grid[i][j] << " |";
+            }
+            cout << endl;
+
+            cout << "        ";
+            // bottom border
+            for (int j = 0; j < n; j++)
+            {
+                if (j == 0)
+                    cout << " ";
+                cout << "----";
+            }
+            cout << endl;
+        }
+    }
 };
 
 // Human class
@@ -172,32 +231,36 @@ public:
     bool placeMove(Board &board) override
     {
         int gridBody = board.grid.size();
-
-        int position;
+        int row = 0;
+        int col = 0;
 
         while (true)
         {
-            cout << name << "'s turn. Place your move: ";
-            cin >> position;
-            if (position > gridBody * gridBody)
-            {
-                cout << position << " is out of the grid. Position must be <= " << gridBody * gridBody << endl;
-            }
-            else
-            {
-                break;
-            }
-        }
+            board.displayBoard(row, col);
+            cout << name << "'s turn";
+            int cursor = getKeyPress();
 
-        // calculating row from position
-        int row = position <= gridBody ? 0 : (position - 1) / gridBody;
-        // calculating column from position
-        int col = position <= gridBody ? position - 1 : (position - 1) % gridBody;
-
-        if (isCellOccupied(board.grid, row, col))
-        {
-            cout << "Position occupied.Choose a different position please." << endl;
-            return placeMove(board);
+            if (cursor == UP && row != 0)
+            {
+                row--;
+            }
+            else if (cursor == LEFT && col != 0)
+            {
+                col--;
+            }
+            else if (cursor == DOWN && row != gridBody - 1)
+            {
+                row++;
+            }
+            else if (cursor == RIGHT && col != gridBody - 1)
+            {
+                col++;
+            }
+            else if (cursor == ENTER)
+            {
+                if (!isCellOccupied(board.grid, row, col))
+                    break;
+            }
         }
 
         board.grid[row][col] = this->symbol;
@@ -236,6 +299,50 @@ public:
         return availableMoves;
     }
 
+    // a function the check if a potential move will result in win based on the given symbol
+    bool checkIfWin(vector<vector<char>> grid, int row, int col, char symbol)
+    {
+        grid[row][col] = symbol;
+
+        bool horizontal = true;
+        bool vertical = true;
+        bool diagonal1 = true;
+        bool diagonal2 = true;
+
+        int n = grid.size();
+        for (int i = 0; i < n; i++)
+            if (grid[row][i] != symbol)
+            {
+                horizontal = false;
+                break;
+            }
+
+        for (int i = 0; i < n; i++)
+            if (grid[i][col] != symbol)
+            {
+                vertical = false;
+                break;
+            }
+
+        // check up left to right bottom
+        for (int i = 0, j = 0; i < n && j < n; i++, j++)
+            if (grid[i][j] != symbol)
+            {
+                diagonal1 = false;
+                break;
+            }
+
+        // check up right to down left
+        for (int i = 0, j = n - 1; i < n && j >= 0; i++, j--)
+            if (grid[i][j] != symbol)
+            {
+                diagonal2 = false;
+                break;
+            }
+
+        return horizontal || vertical || diagonal1 || diagonal2;
+    }
+
     //? remove temporary function to display a vector
     void displayVector(vector<vector<int>> v)
     {
@@ -253,10 +360,20 @@ public:
     }
 
     // function to place symbol an check if the game is over
+    virtual bool placeMove(Board &board) = 0;
+};
+
+// Easy AI class
+class EasyAI : public AI
+{
+public:
+    EasyAI(string name, char symbol) : AI(name, symbol) {}
+
+    // function to place symbol (and check if the game is over) - Easy AI
     bool placeMove(Board &board) override
     {
-        cout << "AI's Turn:" << endl;
-
+        cout << "Easy AI's Turn: Neko is Thinking...";
+        Sleep(2000);
         vector<vector<int>> v = getAvailableMoves(board.grid);
 
         int availableMovesCount = v.size();
@@ -273,6 +390,67 @@ public:
     }
 };
 
+// Medium AI class
+class MediumAI : public AI
+{
+public:
+    MediumAI(string name, char symbol) : AI(name, symbol) {}
+
+    // function to place symbol (and check if the game is over) - Medium AI
+    bool placeMove(Board &board) override
+    {
+        cout << "Medium AI's Turn: Tora is Thinking...";
+        Sleep(2000);
+        vector<vector<int>> v = getAvailableMoves(board.grid);
+        int availableMovesCount = v.size();
+
+        vector<int> aiMove;
+        // check if any move = win
+        bool hasWinningMove = false;
+        for (int i = 0; i < availableMovesCount; i++)
+        {
+            vector<int> move = v[i];
+            if (checkIfWin(board.grid, move[0], move[1], this->symbol))
+            {
+                aiMove = move;
+                hasWinningMove = true;
+                break;
+            }
+        }
+
+        // check if for opponent, any move = win
+        bool hasDefendingMove = false;
+        if (!hasWinningMove)
+        {
+            for (int i = 0; i < availableMovesCount; i++)
+            {
+                vector<int> move = v[i];
+                if (checkIfWin(board.grid, move[0], move[1], 'X'))
+                {
+                    aiMove = move;
+                    hasDefendingMove = true;
+                    break;
+                }
+            }
+        }
+
+        // random move if no winning or defending move
+        if (!hasWinningMove && !hasDefendingMove)
+        {
+            int randomMoveIndex = rand() % availableMovesCount;
+            aiMove = v[randomMoveIndex];
+        }
+
+        int row = aiMove[0];
+        int col = aiMove[1];
+
+        board.grid[row][col] = this->symbol;
+
+        // checking for game over
+        return checkHorizontal(board.grid, row) || checkVertical(board.grid, col) || checkDiagonal(board.grid);
+    }
+};
+
 // function to start a match
 void play(int n, Player *player1, Player *player2)
 {
@@ -280,7 +458,6 @@ void play(int n, Player *player1, Player *player2)
     Board board(n);
 
     // Match loop
-    board.displayBoard();
     Player *turn = player1;
     Player *winner = nullptr;
     while (!gameOver)
@@ -300,7 +477,7 @@ void play(int n, Player *player1, Player *player2)
             turn = player1;
         }
         bool draw = Player::isDraw(board.grid);
-        if (draw)
+        if (!gameOver && draw)
         {
             gameOver = true;
             winner = nullptr;
@@ -309,124 +486,312 @@ void play(int n, Player *player1, Player *player2)
 
     if (winner == nullptr)
     {
-        cout << "Game Over!!! Draw" << endl;
+        cout << "Game Over!!! Draw" << endl
+             << endl;
     }
     else
     {
-        cout << "Game Over!!! Winner: " << (winner->name) << endl;
+        cout << "Game Over!!! Winner: " << (winner->name) << endl
+             << endl;
     }
 
     // setting up restart window
-    char option;
+    int option = 1;
+    int cursorAdder = (n - 3) * 2; // variable to set the cursor such that it doesn't overwrite the board
     while (true)
     {
-        displayHeader();
-        cout << "   [Match] > 1. Restart" << endl;
-        cout << "             2. Back" << endl;
-        cin >> option;
-        if (option == '1')
+        // getting option
+        while (true)
+        {
+            // manual cursor placing
+            std::cout << ESC << (15 + cursorAdder) << ";0H";
+            std::cout << ESC << "J";
+
+            // showing options
+            cout << "   [Match] > " << (option == 1 ? "  " : "") << "1. Restart" << endl;
+            cout << "             " << (option == 2 ? "  " : "") << "2. Back" << endl;
+
+            int cursor = getKeyPress();
+
+            if (cursor == DOWN || cursor == UP)
+            {
+                if (option == 2)
+                    option = 1;
+                else
+                    option = 2;
+            }
+            else if (cursor == ENTER)
+            {
+                break;
+            }
+            else if (cursor == ESCAPE)
+            {
+                option = 2;
+                break;
+            }
+        }
+
+        // using option
+        if (option == 1)
         {
             play(n, player1, player2);
             return;
         }
-        else if (option == '2')
+        else if (option == 2)
         {
             return;
         }
         else
         {
-            displayHeader();
             displayWarning();
         }
     }
 }
 
-// function to start the game
-void runGame()
+void gridSelection(); // forward prototype declaration
+
+// function to choose between AIs if Human vs Ai mode was chosen
+int getAINo()
 {
-    int n;
-    displayHeader();
-    cout << "Enter grid size: ";
-    cin >> n;
-
-    // todo n<3 for production
-    if (n < 2)
+    // todo more options to be added here
+    int aiNo = 1;
+    // getting aiNo
+    while (true)
     {
-        displayHeader();
-        cout << "At least 3x3 dimension is required for fair gameplay." << endl;
-        runGame();
-        return;
-    }
+        clearScreen();
+        cout << "[AI Level]> " << (aiNo == 1 ? "  " : "") << "1. Easy AI" << endl;
+        cout << "            " << (aiNo == 2 ? "  " : "") << "2. Medium AI" << endl;
+        cout << "            " << (aiNo == 3 ? "  " : "") << "3. back" << endl;
 
+        int cursor = getKeyPress();
+
+        if (cursor == DOWN)
+        {
+            if (aiNo == 3)
+                aiNo = 1;
+            else
+                ++aiNo;
+        }
+        else if (cursor == UP)
+        {
+            if (aiNo == 1)
+                aiNo = 3;
+            else
+                --aiNo;
+        }
+        else if (cursor == ENTER)
+        {
+            break;
+        }
+        else if (cursor == ESCAPE)
+        {
+            aiNo = 3;
+            break;
+        }
+    }
+    return aiNo;
+}
+
+// function to start the game
+void modeSelection(int dimension)
+{
     // Player setup based on mode chosen
     Player *player1 = new Human("", 'X');
     Player *player2;
 
     // setup to choose between 2 modes
-    char option;
+    clearScreen();
+
+    int option = 1;
     while (true)
     {
-        displayHeader();
-        cout << "[Play] > 1. Human vs Human" << endl;
-        cout << "         2. Human vs AI" << endl;
-        cin >> option;
-        if (option == '1')
+        // getting option
+        while (true)
+        {
+            clearScreen();
+            displayPlay(option);
+            int cursor = getKeyPress();
+
+            if (cursor == DOWN)
+            {
+                if (option == 4)
+                    option = 1;
+                else
+                    ++option;
+            }
+            else if (cursor == UP)
+            {
+                if (option == 1)
+                    option = 4;
+                else
+                    --option;
+            }
+            else if (cursor == ENTER)
+            {
+                break;
+            }
+            else if (cursor == ESCAPE)
+            {
+                option = 3;
+                break;
+            }
+        }
+
+        // putting option to use
+        if (option == 1)
         {
             player2 = new Human("", 'O');
             break;
         }
-        else if (option == '2')
+        else if (option == 2)
         {
-            player2 = new AI("AI", 'O');
+            // todo more options to be added here
+            int aiNo = getAINo();
+
+            if (aiNo == 1)
+            {
+                player2 = new EasyAI("Neko", 'O');
+            }
+            else if (aiNo == 2)
+            {
+                player2 = new MediumAI("Tora", 'O');
+            } else if(aiNo == 3){
+                modeSelection(dimension);
+                return;
+            }
             break;
         }
-        else
+        else if (option == 3)
         {
-            displayWarning();
+            delete player1;
+            gridSelection();
+            return;
+        }
+        else if (option == 4)
+        {
+            delete player1;
+            return;
         }
     }
 
     // setting up player names
     string player1Name, player2Name;
-    cout << "Enter player 1 name: ";
+    clearScreen();
+    cout << "  [Player 1]> Enter name:_";
     cin >> player1Name;
     player1->name = player1Name;
 
-    if (option == '1')
+    if (option == 1)
     {
-        cout << "Enter player 2 name: ";
+        clearScreen();
+        cout << "  [Player 2]> Enter name:_";
         cin >> player2Name;
         player2->name = player2Name;
     }
 
     // match starting loop
-    play(n, player1, player2);
+    play(dimension, player1, player2);
+
+    // free memory
+    delete player1;
+    delete player2;
+}
+
+// function to get dimensions
+void gridSelection()
+{
+    int dimension = 3;
+    // selecting dimension
+    while (true)
+    {
+        clearScreen();
+        gridSelectorDisplay(dimension);
+
+        int cursor = getKeyPress();
+
+        if (cursor == UP)
+        {  
+            if (dimension == 3)
+                dimension = 7;
+            else
+                dimension--;
+        }
+        else if (cursor == DOWN)
+        {
+            if (dimension == 7)
+                dimension = 3;
+            else
+                dimension++;
+        }
+        else if (cursor == ENTER)
+        {
+            break;
+        }
+    }
+    if (dimension==7)
+    {
+        return;
+    }
+    modeSelection(dimension);
 }
 
 int main()
 {
     // Game loop
+    displayHeader();
     while (true)
     {
-        displayMenu();
-        char option;
-        cin >> option;
+        // taking input
+        int option = 1;
+        while (true)
+        {
+            clearScreen();
+            displayMenu(option);
+            int cursor = getKeyPress();
+
+            if (cursor == DOWN)
+            {
+                if (option == 5)
+                    option = 1;
+                else
+                    ++option;
+            }
+            else if (cursor == UP)
+            {
+                if (option == 1)
+                    option = 5;
+                else
+                    --option;
+            }
+            else if (cursor == ENTER)
+            {
+                break;
+            }
+            else if (cursor == ESCAPE)
+            {
+                option = 5;
+                break;
+            }
+        }
+
+        // putting input to use
         switch (option)
         {
-        case '1':
-            runGame();
+        case 1:
+            gridSelection();
             break;
-        case '2':
+        case 2:
             cout << "Coming soon!!!" << endl;
             break;
-        case '3':
-            cout << "Coming soon!!!" << endl;
+        case 3:
+            rule();
             break;
-        case '4':
-            cout << "Coming Soon!!!";
+        case 4:
+            help();
             break;
-        case '5':
+        case 5:
             cout << "Thanks for playing";
+            Sleep(2000);
             return 0;
             break;
         default:
@@ -434,6 +799,5 @@ int main()
             break;
         }
     }
-
     return 0;
 }

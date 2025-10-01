@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <conio.h>
+#define ESC "\033["
 
 // function to display header- Title of the game and one liner
 void displayHeader()
@@ -11,33 +13,119 @@ void displayHeader()
     std::cout << "-------------------------------------" << std::endl;
 }
 
-// function to display the main menu
-void displayMenu()
+// Dynamic selection displays
+void displayMenu(int option)
 {
-    displayHeader();
-    std::cout << "   [Menu] > 1. Play" << std::endl;
-    std::cout << "            2. History" << std::endl;
-    std::cout << "            3. Rules" << std::endl;
-    std::cout << "            4. Help" << std::endl;
-    std::cout << "            5. Quit" << std::endl;
+    std::cout << "   [Menu] > " << (option == 1 ? "  " : "") << "1. Play" << std::endl;
+    std::cout << "            " << (option == 2 ? "  " : "") << "2. History" << std::endl;
+    std::cout << "            " << (option == 3 ? "  " : "") << "3. Rules" << std::endl;
+    std::cout << "            " << (option == 4 ? "  " : "") << "4. Help" << std::endl;
+    std::cout << "            " << (option == 5 ? "  " : "") << "5. Quit" << std::endl;
+}
+
+void displayPlay(int option)
+{
+    std::cout << "   [Mode] > " << (option == 1 ? "  " : "") << "1. Human vs Human" << std::endl;
+    std::cout << "            " << (option == 2 ? "  " : "") << "2. Human vs AI" << std::endl;
+    std::cout << "            " << (option == 3 ? "  " : "") << "3. Back" << std::endl;
+    std::cout << "            " << (option == 4 ? "  " : "") << "4. Menu" << std::endl;
+}
+
+void gridSelectorDisplay(int option)
+{
+    std::cout << "  [Dimension] > " << (option == 3 ? "  " : "") << "3x3" << std::endl;
+    std::cout << "              > " << (option == 4 ? "  " : "") << "4x4" << std::endl;
+    std::cout << "              > " << (option == 5 ? "  " : "") << "5x5" << std::endl;
+    std::cout << "              > " << (option == 6 ? "  " : "") << "6x6" << std::endl;
+    std::cout << "              > " << (option == 7 ? "  " : "") << "Back" << std::endl;
+}
+// Dynamic selection displays
+
+// function to clear screen below the title
+void clearScreen()
+{
+    std::cout << ESC << "5;0H";
+    std::cout << ESC << "J";
 }
 
 // function to display warning
-void displayWarning(){
-    std::cout << "Invalid Option. Please choose between the given options" << std::endl;
+void displayWarning()
+{
+    std::cout << "Invalid Option. Please choose between the given options.";
 }
 
-// function for help
-void help(){
-  
+// Display Prototype function for help
+void displayHelp()
+{
+
+    std::cout << "Help:" << std::endl
+              << std::endl;
+    std::cout << "Controls desc... to be added accordingly" << std::endl;
+    std::cout << "Rules can be viewed from Menu -> 4." << std::endl;
+    std::cout << "DO NOT enter anything other than integers when placing moves. Otherwise the program will crash." << std::endl;
+    std::cout << "DO NOT resize the terminal, it will result in a not so good looking UI." << std::endl;
+    std::cout << "Many used functions are windows only as it uses many window specific APIs. This app was not tested in any other OS." << std::endl
+              << std::endl;
+
+    std::cout << "Press any key to go back to the menu...";
 }
 
-// function for rules
-void rules(){
-  
+// Main help function
+void help()
+{
+    clearScreen();
+    displayHelp();
+    getch();
+}
+
+// Display Prototype function for rules
+void displayRules()
+{
+    std::cout << "Tic-Tac-Toe Rules (n x n):" << std::endl;
+    std::cout << "  1. Two players take turns placing their symbols (X and O) on an empty cell." << std::endl;
+    std::cout << "  2. A move is valid only if the cell is empty." << std::endl;
+    std::cout << "  3. First to fill an entire row, column, or diagonal with their symbol wins. Example:" << std::endl
+              << std::endl;
+
+    // std::cout << "  Example:" << std::endl;
+    std::cout << "        -------------      -------------      -------------" << std::endl;
+    std::cout << "        | X | X | X |      | X |   | O |      | X |   | O |" << std::endl;
+    std::cout << "        -------------      -------------      -------------" << std::endl;
+    std::cout << "        |   | O |   |      | X | O |   |      | O | X |   |" << std::endl;
+    std::cout << "        -------------      -------------      -------------" << std::endl;
+    std::cout << "        |   |   | O |      | X |   |   |      | O |   | X |" << std::endl;
+    std::cout << "        -------------      -------------      -------------" << std::endl;
+    std::cout << "          Horizontal         Vertical            Diagonal  " << std::endl
+              << std::endl;
+
+    std::cout << "  4. If the board is full and nobody wins -> draw." << std::endl;
+    std::cout << "  5. Usually, X goes first and turns alternate." << std::endl
+              << std::endl;
+    std::cout << "That's all...enjoy!!!" << std::endl
+              << std::endl;
+    std::cout << "Press any key to go back to the menu...";
+}
+
+// Main rule function
+void rule()
+{
+    clearScreen();
+    displayRules();
+    getch();
 }
 
 // function for history
-void history(){
+void history()
+{
+}
 
+//? keyboard input function
+int getKeyPress()
+{
+    int cursor = getch();
+    if (cursor == 224)
+    {
+        cursor += getch();
+    }
+    return cursor;
 }
