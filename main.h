@@ -58,11 +58,11 @@ void displayWarning()
 void displayHelp()
 {
 
-    std::cout << "Help:" << std::endl
-              << std::endl;
-    std::cout << "Controls desc... to be added accordingly" << std::endl;
+    std::cout << "Help:" << std::endl << std::endl;
+    std::cout << "DO NOT run on integrated terminal terminal of any Code Editor, animations won't work." << std::endl;
+    std::cout << "The game is entirely controlled by keyboard keys UP, LEFT, RIGHT, DOWN." << std::endl;
+    std::cout << "Esc button can be used anywhere to go back, except name selection and game screen." << std::endl;
     std::cout << "Rules can be viewed from Menu -> 4." << std::endl;
-    std::cout << "DO NOT enter anything other than integers when placing moves. Otherwise the program will crash." << std::endl;
     std::cout << "DO NOT resize the terminal, it will result in a not so good looking UI." << std::endl;
     std::cout << "Many used functions are windows only as it uses many window specific APIs. This app was not tested in any other OS." << std::endl
               << std::endl;

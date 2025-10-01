@@ -136,49 +136,14 @@ public:
     // function to display the board
     void displayBoard()
     {
-        clearScreen();
-        cout << "Game Board:" << endl;
-        for (int i = 0; i < n; i++)
-        {
-            // board top border
-            if (i == 0)
-            {
-                cout << "        ";
-                for (int j = 0; j < n; j++)
-                {
-                    if (j == 0)
-                        cout << " ";
-                    cout << "----";
-                }
-                cout << endl;
-            }
-
-            cout << "        ";
-            // board elements
-            for (int j = 0; j < n; j++)
-            {
-                if (j == 0)
-                    cout << "| ";
-                cout << grid[i][j] << " | ";
-            }
-            cout << endl;
-
-            cout << "        ";
-            // bottom border
-            for (int j = 0; j < n; j++)
-            {
-                if (j == 0)
-                    cout << " ";
-                cout << "----";
-            }
-            cout << endl;
-        }
+        displayBoard(-1, -1);
     }
-
+    
+    // function to display the board for given row col
     void displayBoard(int row, int col)
     {
         clearScreen();
-        cout << "Game Board:" << endl;
+        cout << "[Game Board] > " << endl;
         for (int i = 0; i < n; i++)
         {
             // board top border
@@ -234,27 +199,40 @@ public:
         int row = 0;
         int col = 0;
 
+        // Getting move from human player
         while (true)
         {
             board.displayBoard(row, col);
             cout << name << "'s turn";
             int cursor = getKeyPress();
 
-            if (cursor == UP && row != 0)
+            if (cursor == UP)
             {
-                row--;
+                if (row == 0)
+                    row = gridBody-1;
+                else
+                    row--;
             }
-            else if (cursor == LEFT && col != 0)
+            else if (cursor == LEFT)
             {
-                col--;
+                if (col == 0)
+                    col = gridBody-1;
+                else
+                    col--;
             }
-            else if (cursor == DOWN && row != gridBody - 1)
+            else if (cursor == DOWN)
             {
-                row++;
+                if (row == (gridBody - 1))
+                    row = 0;
+                else
+                    row++;
             }
-            else if (cursor == RIGHT && col != gridBody - 1)
+            else if (cursor == RIGHT)
             {
-                col++;
+                if (col == (gridBody - 1))
+                    col = 0;
+                else
+                    col++;
             }
             else if (cursor == ENTER)
             {
@@ -263,6 +241,7 @@ public:
             }
         }
 
+        // placing the move on the board
         board.grid[row][col] = this->symbol;
 
         // checking for game over
@@ -508,8 +487,8 @@ void play(int n, Player *player1, Player *player2)
             std::cout << ESC << "J";
 
             // showing options
-            cout << "   [Match] > " << (option == 1 ? "  " : "") << "1. Restart" << endl;
-            cout << "             " << (option == 2 ? "  " : "") << "2. Back" << endl;
+            cout << "  [Match] > " << (option == 1 ? "  " : "") << "1. Restart" << endl;
+            cout << "            " << (option == 2 ? "  " : "") << "2. Back" << endl;
 
             int cursor = getKeyPress();
 
@@ -592,7 +571,7 @@ int getAINo()
     return aiNo;
 }
 
-// function to start the game
+// function to select mode and name players
 void modeSelection(int dimension)
 {
     // Player setup based on mode chosen
@@ -645,7 +624,7 @@ void modeSelection(int dimension)
         }
         else if (option == 2)
         {
-            // todo more options to be added here
+            // todo hard mode to be added here
             int aiNo = getAINo();
 
             if (aiNo == 1)
@@ -676,16 +655,21 @@ void modeSelection(int dimension)
 
     // setting up player names
     string player1Name, player2Name;
-    clearScreen();
-    cout << "  [Player 1]> Enter name:_";
-    cin >> player1Name;
+    while (player1Name=="")
+    {
+        clearScreen();
+        cout << "  [Player 1]> Enter name:_";
+        getline(cin, player1Name);
+    }
     player1->name = player1Name;
 
     if (option == 1)
     {
-        clearScreen();
-        cout << "  [Player 2]> Enter name:_";
-        cin >> player2Name;
+        while (player2Name==""){
+            clearScreen();
+            cout << "  [Player 2]> Enter name:_";
+            getline(cin, player2Name);
+        }
         player2->name = player2Name;
     }
 
@@ -726,12 +710,16 @@ void gridSelection()
         else if (cursor == ENTER)
         {
             break;
+        } else if (cursor == ESCAPE)
+        {
+            return;
         }
     }
     if (dimension==7)
     {
         return;
     }
+    
     modeSelection(dimension);
 }
 
