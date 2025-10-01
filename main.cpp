@@ -99,7 +99,7 @@ public:
     }
 
     // function to place symbol and check if game is over
-    virtual bool placeMove(Board &board) = 0;
+    virtual int placeMove(Board &board) = 0;
 };
 
 // class for Board
@@ -193,7 +193,7 @@ public:
     Human(string name, char symbol) : Player(name, symbol) {}
 
     // function to place symbol an check if the game is over
-    bool placeMove(Board &board) override
+    int placeMove(Board &board) override
     {
         int gridBody = board.grid.size();
         int row = 0;
@@ -238,6 +238,10 @@ public:
             {
                 if (!isCellOccupied(board.grid, row, col))
                     break;
+            }
+            else if (cursor == ESCAPE)
+            {
+                return ESCAPE;
             }
         }
 
@@ -339,7 +343,7 @@ public:
     }
 
     // function to place symbol an check if the game is over
-    virtual bool placeMove(Board &board) = 0;
+    virtual int placeMove(Board &board) = 0;
 };
 
 // Easy AI class
@@ -349,7 +353,7 @@ public:
     EasyAI(string name, char symbol) : AI(name, symbol) {}
 
     // function to place symbol (and check if the game is over) - Easy AI
-    bool placeMove(Board &board) override
+    int placeMove(Board &board) override
     {
         cout << "Easy AI's Turn: Neko is Thinking...";
         Sleep(2000);
@@ -376,7 +380,7 @@ public:
     MediumAI(string name, char symbol) : AI(name, symbol) {}
 
     // function to place symbol (and check if the game is over) - Medium AI
-    bool placeMove(Board &board) override
+    int placeMove(Board &board) override
     {
         cout << "Medium AI's Turn: Tora is Thinking...";
         Sleep(2000);
@@ -443,14 +447,20 @@ void play(int n, Player *player1, Player *player2)
     {
         if (turn == player1)
         {
-            gameOver = player1->placeMove(board);
+            int moveResult = player1->placeMove(board);
+            if (moveResult==ESCAPE) return;
+            
+            gameOver = moveResult;
             board.displayBoard();
             winner = player1;
             turn = player2;
         }
         else
         {
-            gameOver = player2->placeMove(board);
+            int moveResult = player2->placeMove(board);
+            if (moveResult==ESCAPE) return;
+
+            gameOver = moveResult;
             board.displayBoard();
             winner = player2;
             turn = player1;

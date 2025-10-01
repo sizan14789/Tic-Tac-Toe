@@ -33,11 +33,11 @@ void displayPlay(int option)
 
 void gridSelectorDisplay(int option)
 {
-    std::cout << "  [Dimension] > " << (option == 3 ? "  " : "") << "3x3" << std::endl;
-    std::cout << "              > " << (option == 4 ? "  " : "") << "4x4" << std::endl;
-    std::cout << "              > " << (option == 5 ? "  " : "") << "5x5" << std::endl;
-    std::cout << "              > " << (option == 6 ? "  " : "") << "6x6" << std::endl;
-    std::cout << "              > " << (option == 7 ? "  " : "") << "Back" << std::endl;
+    std::cout << "  [Dimension] > " << (option == 3 ? " " : "") << "3" << (option == 3 ? " " : "") << "x" << (option == 3 ? " " : "") << "3" << std::endl;
+    std::cout << "                " << (option == 4 ? " " : "") << "4" << (option == 4 ? " " : "") << "x" << (option == 4 ? " " : "") << "4" << std::endl;
+    std::cout << "                " << (option == 5 ? " " : "") << "5" << (option == 5 ? " " : "") << "x" << (option == 5 ? " " : "") << "5" << std::endl;
+    std::cout << "                " << (option == 6 ? " " : "") << "6" << (option == 6 ? " " : "") << "x" << (option == 6 ? " " : "") << "6" << std::endl;
+    std::cout << "                " << (option == 7 ? "  " : "") << "Back" << std::endl;
 }
 // Dynamic selection displays
 
@@ -58,10 +58,11 @@ void displayWarning()
 void displayHelp()
 {
 
-    std::cout << "Help:" << std::endl << std::endl;
+    std::cout << "Help:" << std::endl
+              << std::endl;
     std::cout << "DO NOT run on integrated terminal terminal of any Code Editor, animations won't work." << std::endl;
     std::cout << "The game is entirely controlled by keyboard keys UP, LEFT, RIGHT, DOWN." << std::endl;
-    std::cout << "Esc button can be used anywhere to go back, except name selection and game screen." << std::endl;
+    std::cout << "Esc button can be used anywhere to go back, except name selection screen." << std::endl;
     std::cout << "Rules can be viewed from Menu -> 4." << std::endl;
     std::cout << "DO NOT resize the terminal, it will result in a not so good looking UI." << std::endl;
     std::cout << "Many used functions are windows only as it uses many window specific APIs. This app was not tested in any other OS." << std::endl
