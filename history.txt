@@ -3,4 +3,5 @@
       
 s vs r -> Winner: s
 s vs r -> Draw
-  s vs r -> Winner: s
+s vs r -> Winner: s
+Sizan vs Neko -> Winner: Sizan

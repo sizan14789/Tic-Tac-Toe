@@ -45,8 +45,8 @@ void gridSelectorDisplay(int option)
 // function to clear screen below the title
 void clearScreen()
 {
-    std::cout << ESC << "5;0H";
-    std::cout << ESC << "J";
+    std::cout << ESC << "5;0H"; // going to 5th row
+    std::cout << ESC << "J"; // clear all below 
 }
 
 // function to display warning
@@ -63,7 +63,7 @@ void displayHelp()
     std::cout << "---DO NOT run on integrated terminal terminal of any Code Editor, animations won't work." << std::endl;
     std::cout << "The game is entirely controlled by keyboard keys UP, LEFT, RIGHT, DOWN." << std::endl;
     std::cout << "Esc button can be used anywhere to go back, except name selection screen." << std::endl;
-    std::cout << "Rules can be viewed from Menu -> 4." << std::endl;
+    std::cout << "Rules can be viewed from Menu -> 3." << std::endl;
     std::cout << "DO NOT resize the terminal, it will result in a not so good looking UI." << std::endl;
     std::cout << "Many used functions are windows only as it uses many window specific APIs. This app was not tested in any other OS." << std::endl
               << std::endl;
