@@ -1,7 +1,1 @@
-
-
-      
-s vs r -> Winner: s
-s vs r -> Draw
-s vs r -> Winner: s
-Sizan vs Neko -> Winner: Sizan
+Sizan vs Neko - [3x3] -> Winner: Sizan

@@ -476,15 +476,17 @@ void play(int n, Player *player1, Player *player2)
 
     if (winner == nullptr)
     {
-        string toBeSaved = player1->name + " vs " + player2->name + " -> Draw\n";
+        string toBeSaved = player1->name + " vs " + player2->name + " - [" + std::to_string(n) + "x" + std::to_string(n) + "] " + " -> Draw\n";
         savetoFile(toBeSaved);
-        cout << "Game Over!!! Draw" << endl << endl;
+        cout << "Game Over!!! Draw" << endl
+             << endl;
     }
     else
     {
-        string toBeSaved = player1->name + " vs " + player2->name + " -> Winner: " + winner->name + "\n";
+        string toBeSaved = player1->name + " vs " + player2->name + " - [" + std::to_string(n) + "x" + std::to_string(n) + "] " + " -> Winner: " + winner->name + "\n";
         savetoFile(toBeSaved);
-        cout << "Game Over!!! Winner: " << (winner->name) << endl << endl;
+        cout << "Game Over!!! Winner: " << (winner->name) << endl
+             << endl;
     }
 
     // setting up restart window
