@@ -138,7 +138,7 @@ public:
     {
         displayBoard(-1, -1);
     }
-    
+
     // function to display the board for given row col
     void displayBoard(int row, int col)
     {
@@ -209,14 +209,14 @@ public:
             if (cursor == UP)
             {
                 if (row == 0)
-                    row = gridBody-1;
+                    row = gridBody - 1;
                 else
                     row--;
             }
             else if (cursor == LEFT)
             {
                 if (col == 0)
-                    col = gridBody-1;
+                    col = gridBody - 1;
                 else
                     col--;
             }
@@ -448,8 +448,8 @@ void play(int n, Player *player1, Player *player2)
         if (turn == player1)
         {
             int moveResult = player1->placeMove(board);
-            if (moveResult==ESCAPE) return;
-            
+            if (moveResult == ESCAPE)
+                return;
             gameOver = moveResult;
             board.displayBoard();
             winner = player1;
@@ -458,7 +458,8 @@ void play(int n, Player *player1, Player *player2)
         else
         {
             int moveResult = player2->placeMove(board);
-            if (moveResult==ESCAPE) return;
+            if (moveResult == ESCAPE)
+                return;
 
             gameOver = moveResult;
             board.displayBoard();
@@ -475,13 +476,15 @@ void play(int n, Player *player1, Player *player2)
 
     if (winner == nullptr)
     {
-        cout << "Game Over!!! Draw" << endl
-             << endl;
+        string toBeSaved = player1->name + " vs " + player2->name + " -> Draw\n";
+        savetoFile(toBeSaved);
+        cout << "Game Over!!! Draw" << endl << endl;
     }
     else
     {
-        cout << "Game Over!!! Winner: " << (winner->name) << endl
-             << endl;
+        string toBeSaved = player1->name + " vs " + player2->name + " -> Winner: " + winner->name + "\n";
+        savetoFile(toBeSaved);
+        cout << "Game Over!!! Winner: " << (winner->name) << endl << endl;
     }
 
     // setting up restart window
@@ -644,7 +647,9 @@ void modeSelection(int dimension)
             else if (aiNo == 2)
             {
                 player2 = new MediumAI("Tora", 'O');
-            } else if(aiNo == 3){
+            }
+            else if (aiNo == 3)
+            {
                 modeSelection(dimension);
                 return;
             }
@@ -665,7 +670,7 @@ void modeSelection(int dimension)
 
     // setting up player names
     string player1Name, player2Name;
-    while (player1Name=="")
+    while (player1Name == "")
     {
         clearScreen();
         cout << "  [Player 1]> Enter name:_";
@@ -675,7 +680,8 @@ void modeSelection(int dimension)
 
     if (option == 1)
     {
-        while (player2Name==""){
+        while (player2Name == "")
+        {
             clearScreen();
             cout << "  [Player 2]> Enter name:_";
             getline(cin, player2Name);
@@ -704,7 +710,7 @@ void gridSelection()
         int cursor = getKeyPress();
 
         if (cursor == UP)
-        {  
+        {
             if (dimension == 3)
                 dimension = 7;
             else
@@ -720,16 +726,17 @@ void gridSelection()
         else if (cursor == ENTER)
         {
             break;
-        } else if (cursor == ESCAPE)
+        }
+        else if (cursor == ESCAPE)
         {
             return;
         }
     }
-    if (dimension==7)
+    if (dimension == 7)
     {
         return;
     }
-    
+
     modeSelection(dimension);
 }
 
@@ -779,7 +786,7 @@ int main()
             gridSelection();
             break;
         case 2:
-            cout << "Coming soon!!!" << endl;
+            history();
             break;
         case 3:
             rule();

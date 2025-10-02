@@ -1,0 +1,6 @@
+
+
+      
+s vs r -> Winner: s
+s vs r -> Draw
+  s vs r -> Winner: s

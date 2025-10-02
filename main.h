@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <conio.h>
+#include <fstream>
 #define ESC "\033["
 
 // function to display header- Title of the game and one liner
@@ -58,9 +59,8 @@ void displayWarning()
 void displayHelp()
 {
 
-    std::cout << "Help:" << std::endl
-              << std::endl;
-    std::cout << "DO NOT run on integrated terminal terminal of any Code Editor, animations won't work." << std::endl;
+    std::cout << "[Help] > " << std::endl << std::endl;
+    std::cout << "---DO NOT run on integrated terminal terminal of any Code Editor, animations won't work." << std::endl;
     std::cout << "The game is entirely controlled by keyboard keys UP, LEFT, RIGHT, DOWN." << std::endl;
     std::cout << "Esc button can be used anywhere to go back, except name selection screen." << std::endl;
     std::cout << "Rules can be viewed from Menu -> 4." << std::endl;
@@ -82,25 +82,25 @@ void help()
 // Display Prototype function for rules
 void displayRules()
 {
+    std::cout << "[Rules] > " << std::endl << std::endl;
     std::cout << "Tic-Tac-Toe Rules (n x n):" << std::endl;
-    std::cout << "  1. Two players take turns placing their symbols (X and O) on an empty cell." << std::endl;
-    std::cout << "  2. A move is valid only if the cell is empty." << std::endl;
-    std::cout << "  3. First to fill an entire row, column, or diagonal with their symbol wins. Example:" << std::endl
+    std::cout << "   1. Two players take turns placing their symbols (X and O) on an empty cell." << std::endl;
+    std::cout << "   2. A move is valid only if the cell is empty." << std::endl;
+    std::cout << "   3. First to fill an entire row, column, or diagonal with their symbol wins. Example:" << std::endl
               << std::endl;
 
-    // std::cout << "  Example:" << std::endl;
-    std::cout << "        -------------      -------------      -------------" << std::endl;
-    std::cout << "        | X | X | X |      | X |   | O |      | X |   | O |" << std::endl;
-    std::cout << "        -------------      -------------      -------------" << std::endl;
-    std::cout << "        |   | O |   |      | X | O |   |      | O | X |   |" << std::endl;
-    std::cout << "        -------------      -------------      -------------" << std::endl;
-    std::cout << "        |   |   | O |      | X |   |   |      | O |   | X |" << std::endl;
-    std::cout << "        -------------      -------------      -------------" << std::endl;
-    std::cout << "          Horizontal         Vertical            Diagonal  " << std::endl
+    std::cout << "         -------------      -------------      -------------" << std::endl;
+    std::cout << "         | X | X | X |      | X |   | O |      | X |   | O |" << std::endl;
+    std::cout << "         -------------      -------------      -------------" << std::endl;
+    std::cout << "         |   | O |   |      | X | O |   |      | O | X |   |" << std::endl;
+    std::cout << "         -------------      -------------      -------------" << std::endl;
+    std::cout << "         |   |   | O |      | X |   |   |      | O |   | X |" << std::endl;
+    std::cout << "         -------------      -------------      -------------" << std::endl;
+    std::cout << "           Horizontal         Vertical            Diagonal  " << std::endl
               << std::endl;
 
-    std::cout << "  4. If the board is full and nobody wins -> draw." << std::endl;
-    std::cout << "  5. Usually, X goes first and turns alternate." << std::endl
+    std::cout << "   4. If the board is full and nobody wins -> draw." << std::endl;
+    std::cout << "   5. Usually, X goes first and turns alternate." << std::endl
               << std::endl;
     std::cout << "That's all...enjoy!!!" << std::endl
               << std::endl;
@@ -115,9 +115,40 @@ void rule()
     getch();
 }
 
-// function for history
+// function for history and file handling
+void savetoFile(std::string line){
+    std::ofstream file("history.txt", std::ios::app);
+    file << line;
+    file.close();
+}
+
+// function to check if the line is empty
+bool empty(std::string line){
+    int n = line.size();
+    for(char c : line)
+        if(c!=' ')
+            return false;
+    return true;
+}
+
+// function for the option history in menu
 void history()
 {
+    clearScreen();
+
+    std::cout << "[History] > " << std::endl << std::endl;
+
+    // load from file
+    std::ifstream history("history.txt");
+
+    std::string line;
+    while(getline(history, line)){
+        if(!empty(line))
+            std::cout << "    " << line << std::endl;
+    }
+    
+    std::cout << "\nPress any key to go back to the menu...";
+    getch();
 }
 
 //? keyboard input function
