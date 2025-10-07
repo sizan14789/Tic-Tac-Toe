@@ -143,7 +143,7 @@ public:
     void displayBoard(int row, int col)
     {
         clearScreen();
-        cout << "[Game Board] > " << endl;
+        cout << BMAGENTA "[Game Board] > " RESET << endl;
         for (int i = 0; i < n; i++)
         {
             // board top border
@@ -166,10 +166,44 @@ public:
                 if (j == 0)
                     cout << "|";
 
-                if (i == row && j == col)
-                    cout << ">" << grid[i][j] << "<|";
+                // showing colored element based on symbol 
+                char cellValue = grid[i][j];
+                if (cellValue == 'X')
+                {
+                    if (i == row && j == col)
+                        cout << BGREEN ">" RESET; 
+                    else
+                        cout << " ";
+
+                    cout << BRED << cellValue << RESET;
+
+                    if (i == row && j == col)
+                        cout << BGREEN "<" RESET "|";
+                    else 
+                        cout << " |";
+                }
+                else if (cellValue == 'O')
+                {
+
+                    if (i == row && j == col)
+                        cout << BGREEN ">" RESET; 
+                    else
+                        cout << " ";
+
+                    cout << BBLUE << cellValue << RESET;
+
+                    if (i == row && j == col)
+                        cout << BGREEN "<" RESET "|";
+                    else 
+                        cout << " |";
+                }
                 else
-                    cout << " " << grid[i][j] << " |";
+                {
+                    if (i == row && j == col)
+                        cout << BGREEN ">" RESET << cellValue << BGREEN "<" RESET "|";
+                    else
+                        cout << " " << cellValue << " |";
+                }
             }
             cout << endl;
 
@@ -553,9 +587,7 @@ int getAINo()
     while (true)
     {
         clearScreen();
-        cout << "[AI Level]> " << (aiNo == 1 ? "  " : "") << "1. Easy AI" << endl;
-        cout << "            " << (aiNo == 2 ? "  " : "") << "2. Medium AI" << endl;
-        cout << "            " << (aiNo == 3 ? "  " : "") << "3. back" << endl;
+        aiSelectorDisplay(aiNo);
 
         int cursor = getKeyPress();
 
@@ -675,7 +707,7 @@ void modeSelection(int dimension)
     while (player1Name == "")
     {
         clearScreen();
-        cout << "  [Player 1]> Enter name:_";
+        askNameDisplay(1);
         getline(cin, player1Name);
     }
     player1->name = player1Name;
@@ -685,7 +717,7 @@ void modeSelection(int dimension)
         while (player2Name == "")
         {
             clearScreen();
-            cout << "  [Player 2]> Enter name:_";
+            askNameDisplay(2);
             getline(cin, player2Name);
         }
         player2->name = player2Name;
