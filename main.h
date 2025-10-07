@@ -26,14 +26,14 @@ void displayHeader()
 {
     std::cout << std::endl;
     std::cout << BCYAN << "             Tic Tac Toe      " << RESET << std::endl;
-    std::cout << "       A turn based board game   "  << std::endl;
+    std::cout << "       A turn based board game   " << std::endl;
     std::cout << BWHITE << "-------------------------------------" << RESET << std::endl;
 }
 
 // Dynamic selection displays
 void displayMenu(int option)
 {
-    std::cout << BMAGENTA"   [Menu] > " RESET << (option == 1 ? GREEN "  " : "") << "1. Play" << (option == 1 ? RESET : "") << std::endl;
+    std::cout << BMAGENTA "   [Menu] > " RESET << (option == 1 ? GREEN "  " : "") << "1. Play" << (option == 1 ? RESET : "") << std::endl;
     std::cout << "            " << (option == 2 ? GREEN "  " : "") << "2. History" << (option == 2 ? RESET : "") << std::endl;
     std::cout << "            " << (option == 3 ? GREEN "  " : "") << "3. Rules" << (option == 3 ? RESET : "") << std::endl;
     std::cout << "            " << (option == 4 ? GREEN "  " : "") << "4. Help" << (option == 4 ? RESET : "") << std::endl;
@@ -57,11 +57,19 @@ void gridSelectorDisplay(int option)
     std::cout << "                " << (option == 7 ? RED "  " : "") << "Back" << (option == 7 ? RESET : "") << std::endl;
 }
 
-void aiSelectorDisplay(int option)
+void aiSelectorDisplay(int option, int dimension)
 {
     std::cout << BMAGENTA "[AI Level]> " RESET << (option == 1 ? BGREEN "  " : "") << "1. Easy AI" << (option == 1 ? RESET : "") << std::endl;
     std::cout << "            " << (option == 2 ? BYELLOW "  " : "") << "2. Medium AI" << (option == 2 ? RESET : "") << std::endl;
-    std::cout << "            " << (option == 3 ? BRED "  " : "") << "3. back" << (option == 3 ? RESET : "") << std::endl;
+    if (dimension == 3)
+    {
+        std::cout << "            " << (option == 3 ? BMAGENTA "  " : "") << "3. Hard AI (Unbeatable)" << (option == 3 ? RESET : "") << std::endl;
+        std::cout << "            " << (option == 4 ? BRED "  " : "") << "4. back" << (option == 4 ? RESET : "") << std::endl;
+    }
+    else
+    {
+        std::cout << "            " << (option == 4 ? BRED "  " : "") << "3. back" << (option == 4 ? RESET : "") << std::endl;
+    }
 }
 
 // Dynamic selection displays END
@@ -195,5 +203,5 @@ int getKeyPress()
 // functions directly related to the game
 void askNameDisplay(int n)
 {
-    std::cout << (n==1? BRED : BBLUE) << "  [Player "<<n<<"]> " RESET "Enter name:_"; // todo add color based on player turn
+    std::cout << (n == 1 ? BRED : BBLUE) << "  [Player " << n << "]> " RESET "Enter name:_"; // todo add color based on player turn
 }

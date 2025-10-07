@@ -166,12 +166,12 @@ public:
                 if (j == 0)
                     cout << "|";
 
-                // showing colored element based on symbol 
+                // showing colored element based on symbol
                 char cellValue = grid[i][j];
                 if (cellValue == 'X')
                 {
                     if (i == row && j == col)
-                        cout << BGREEN ">" RESET; 
+                        cout << BGREEN ">" RESET;
                     else
                         cout << " ";
 
@@ -179,14 +179,14 @@ public:
 
                     if (i == row && j == col)
                         cout << BGREEN "<" RESET "|";
-                    else 
+                    else
                         cout << " |";
                 }
                 else if (cellValue == 'O')
                 {
 
                     if (i == row && j == col)
-                        cout << BGREEN ">" RESET; 
+                        cout << BGREEN ">" RESET;
                     else
                         cout << " ";
 
@@ -194,7 +194,7 @@ public:
 
                     if (i == row && j == col)
                         cout << BGREEN "<" RESET "|";
-                    else 
+                    else
                         cout << " |";
                 }
                 else
@@ -468,6 +468,177 @@ public:
     }
 };
 
+// Hard AI class
+class HardAI : public AI
+{
+public:
+    HardAI(string name, char symbol) : AI(name, symbol) {}
+
+    // function to check match result and return the result
+    char getResult(vector<vector<char>> grid)
+    {
+        int n = grid.size();
+
+        // main diagonal matched
+        bool mainDiagonalMatched = true;
+        for (int i = 1; i < n; i++)
+        {
+            if (grid[i][i] != grid[i - 1][i - 1])
+            {
+                mainDiagonalMatched = false;
+                break;
+            }
+        }
+        if (mainDiagonalMatched == true)
+            return grid[0][0];
+
+        // main diagonal matched
+        bool secondDiagonalMatched = true;
+        for (int i = 1, j = n - 2; i < n; i++, j--)
+        {
+            if (grid[i][j] != grid[i - 1][j + 1])
+            {
+                secondDiagonalMatched = false;
+                break;
+            }
+        }
+        if (secondDiagonalMatched == true)
+            return grid[0][n - 1];
+
+        // check horizontal
+        for (int i = 0; i < n; i++)
+        {
+            bool horizontalMatched = true;
+            for (int j = 1; j < n; j++)
+            {
+                if (grid[i][j] != grid[i][j - 1])
+                {
+                    horizontalMatched = false;
+                    break;
+                }
+            }
+            if (horizontalMatched)
+                return grid[i][0];
+        }
+
+        // check horizontal
+        for (int j = 0; j < n; j++)
+        {
+            bool verticalMatched = true;
+            for (int i = 1; i < n; i++)
+            {
+                if (grid[i][j] != grid[i - 1][j])
+                {
+                    verticalMatched = false;
+                    break;
+                }
+            }
+            if (verticalMatched)
+                return grid[0][j];
+        }
+
+        // check draw
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] != 'X' && grid[i][j] != 'O')
+                {
+                    return '#';
+                }
+            }
+        }
+
+        return 'D';
+    }
+
+    // function to get rating of each possible move
+    int getMoveRating(vector<vector<char>> *grid, bool isAi)
+    {
+        char result = getResult((*grid));
+        // displayBoard(*grid);
+
+        if (result == 'O')
+            return 1;
+
+        if (result == 'X')
+            return -1;
+
+        if (result == 'D')
+            return 0;
+
+        vector<vector<int>> availableMoves = getAvailableMoves((*grid));
+
+        if (isAi)
+        {
+            int maxPoint = -10;
+            for (vector<int> move : availableMoves)
+            {
+                int newRow = move[0];
+                int newCol = move[1];
+                (*grid)[newRow][newCol] = 'O';
+                int curPoint = getMoveRating(grid, false);
+                if (curPoint > maxPoint)
+                {
+                    maxPoint = curPoint;
+                }
+                (*grid)[newRow][newCol] = ' ';
+            }
+            return maxPoint;
+        }
+        else
+        {
+            int minPoint = 10;
+            for (vector<int> move : availableMoves)
+            {
+                int newRow = move[0];
+                int newCol = move[1];
+                (*grid)[newRow][newCol] = 'X';
+                int curPoint = getMoveRating(grid, true);
+                if (curPoint < minPoint)
+                {
+                    minPoint = curPoint;
+                }
+                (*grid)[newRow][newCol] = ' ';
+            }
+            return minPoint;
+        }
+    }
+
+    // function to place symbol (and check if the game is over) - Hard AI
+    int placeMove(Board &board) override
+    {
+        cout << "Hard AI's Turn: Kitsune is Thinking...";
+        Sleep(2000);
+
+        vector<vector<int>> availableMoves = getAvailableMoves(board.grid);
+
+        vector<int> bestMove;
+        int maxRating = -10;
+        for (auto move : availableMoves)
+        {
+            int row = move[0];
+            int col = move[1];
+            board.grid[row][col] = 'O';
+            int curRating = getMoveRating(&(board.grid), false);
+            if (curRating > maxRating)
+            {
+                bestMove = move;
+                maxRating = curRating;
+            }
+            board.grid[row][col] = ' ';
+        }
+
+        int row = bestMove[0];
+        int col = bestMove[1];
+
+        board.grid[row][col] = this->symbol;
+
+        // checking for game over
+        return checkHorizontal(board.grid, row) || checkVertical(board.grid, col) || checkDiagonal(board.grid);
+    }
+};
+
 // function to start a match
 void play(int n, Player *player1, Player *player2)
 {
@@ -579,7 +750,7 @@ void play(int n, Player *player1, Player *player2)
 void gridSelection(); // forward prototype declaration
 
 // function to choose between AIs if Human vs Ai mode was chosen
-int getAINo()
+int getAINo(int dimension)
 {
     // todo more options to be added here
     int aiNo = 1;
@@ -587,22 +758,26 @@ int getAINo()
     while (true)
     {
         clearScreen();
-        aiSelectorDisplay(aiNo);
+        aiSelectorDisplay(aiNo, dimension);
 
         int cursor = getKeyPress();
 
         if (cursor == DOWN)
         {
-            if (aiNo == 3)
+            if (aiNo == 4)
                 aiNo = 1;
             else
+                ++aiNo;
+            if(dimension!=3 && aiNo==3)
                 ++aiNo;
         }
         else if (cursor == UP)
         {
             if (aiNo == 1)
-                aiNo = 3;
+                aiNo = 4;
             else
+                --aiNo;
+            if(dimension!=3 && aiNo==3)
                 --aiNo;
         }
         else if (cursor == ENTER)
@@ -611,7 +786,7 @@ int getAINo()
         }
         else if (cursor == ESCAPE)
         {
-            aiNo = 3;
+            aiNo = 4;
             break;
         }
     }
@@ -671,8 +846,7 @@ void modeSelection(int dimension)
         }
         else if (option == 2)
         {
-            // todo hard mode to be added here
-            int aiNo = getAINo();
+            int aiNo = getAINo(dimension);
 
             if (aiNo == 1)
             {
@@ -683,6 +857,10 @@ void modeSelection(int dimension)
                 player2 = new MediumAI("Tora", 'O');
             }
             else if (aiNo == 3)
+            {
+                player2 = new HardAI("Kitsune", 'O');
+            }
+            else if (aiNo == 4)
             {
                 modeSelection(dimension);
                 return;
@@ -829,7 +1007,7 @@ int main()
             help();
             break;
         case 5:
-            cout << "Thanks for playing";
+            cout << "\nThanks for playing :)";
             Sleep(2000);
             return 0;
             break;
