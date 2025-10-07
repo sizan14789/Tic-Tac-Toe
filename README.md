@@ -18,7 +18,7 @@ Tic-Tac-Toe is a two-player turn-based game where each player places their symbo
 
   * **Neko (Easy)** — fast, casual opponent.
   * **Tora (Medium)** — stronger heuristics for a harder match.
-  * **Hard (Unbeatable)** — coming soon (planned).
+  * **Hard (Unbeatable)** — AI that knows all possible moves, unbeatable.
 * **Keyboard-first UI:** Arrow keys or WASD to move, `Enter` to confirm, and **`Escape`** to go back from anywhere.
 * **Clean console UI:** Designed to feel GUI-like while remaining text-based.
 * **Persistent history:** Every completed match is appended to a plain-text history file (default: `history.txt`) and can be loaded from the menu for review.
