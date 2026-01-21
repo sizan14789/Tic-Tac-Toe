@@ -360,22 +360,6 @@ public:
         return horizontal || vertical || diagonal1 || diagonal2;
     }
 
-    //? remove temporary function to display a vector
-    void displayVector(vector<vector<int>> v)
-    {
-        int n = v.size();
-        for (int i = 0; i < n; i++)
-        {
-            int l = v[i].size();
-            for (int j = 0; j < l; j++)
-            {
-                cout << v[i][j] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl;
-    }
-
     // function to place symbol an check if the game is over
     virtual int placeMove(Board &board) = 0;
 };
@@ -752,7 +736,6 @@ void gridSelection(); // forward prototype declaration
 // function to choose between AIs if Human vs Ai mode was chosen
 int getAINo(int dimension)
 {
-    // todo more options to be added here
     int aiNo = 1;
     // getting aiNo
     while (true)
